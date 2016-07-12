@@ -1,0 +1,17 @@
+version: 7.1.0-{build}
+image: Visual Studio 2015
+build_script:
+- cmd: >-
+    dotnet restore -v Warning	
+
+    dotnet pack .\Source\SapientGuardian.EntityFrameworkCore.MySql -o .\artifacts\SapientGuardian.EntityFrameworkCore.MySql -c Release
+artifacts:
+- path: 'artifacts\**\*.nupkg'
+deploy:
+  provider: NuGet
+  api_key:
+    secure: 7nX5a7V6wWbtPSJ6bQSU9BRZwJEdn70w0Ydlf5fuk44Gjk9BVgxnYK6u8MNzT2yA
+  artifact: /.*\.nupkg/
+  on:
+    branch: master
+    appveyor_repo_tag: true
