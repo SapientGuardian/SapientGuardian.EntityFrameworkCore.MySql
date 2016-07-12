@@ -1,6 +1,6 @@
 #SapientGuardian.EntityFrameworkCore.MySql
 
-##This MySQL database provider for Entity Framework Core.
+##This is a MySQL database provider for Entity Framework Core.
 
 [![Windows Build status](https://ci.appveyor.com/api/projects/status/lqpvh2g4hb8u0ndq?svg=true)](https://ci.appveyor.com/project/SapientGuardian/sapientguardian-entityframeworkcore-mysql)<br />
 [![Linux/OSX Build Status](https://travis-ci.org/SapientGuardian/SapientGuardian.EntityFrameworkCore.MySql.png)](https://travis-ci.org/SapientGuardian/SapientGuardian.EntityFrameworkCore.MySql)<br />
