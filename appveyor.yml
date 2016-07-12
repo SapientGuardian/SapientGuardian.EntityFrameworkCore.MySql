@@ -4,7 +4,7 @@ build_script:
 - cmd: >-
     dotnet restore -v Warning	
 
-    dotnet pack .\Source\SapientGuardian.EntityFrameworkCore.MySql -o .\artifacts\SapientGuardian.EntityFrameworkCore.MySql -c Release
+    dotnet pack .\src\SapientGuardian.EntityFrameworkCore.MySql -o .\artifacts\SapientGuardian.EntityFrameworkCore.MySql -c Release
 artifacts:
 - path: 'artifacts\**\*.nupkg'
 deploy:
