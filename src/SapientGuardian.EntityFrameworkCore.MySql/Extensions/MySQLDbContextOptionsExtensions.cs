@@ -27,8 +27,18 @@ using System.Data.Common;
 
 namespace MySQL.Data.Entity.Extensions
 {
+	/// <summary>
+	///     MySQL specific extension methods for <see cref="DbContextOptionsBuilder"/>.
+	/// </summary>
 	public static class MySQLDbContextOptionsExtensions
 	{
+		/// <summary>
+		///     Configures the context to connect to a MySQL database.
+		/// </summary>
+		/// <param name="optionsBuilder"> The builder being used to configure the context. </param>
+		/// <param name="connectionString"> The connection string of the database to connect to. </param>
+		/// <param name="mysqlOptionsAction">An optional action to allow additional MySQL specific configuration.</param>
+		/// <returns> The options builder so that further configuration can be chained. </returns>
 		public static DbContextOptionsBuilder UseMySQL(
 			this DbContextOptionsBuilder optionsBuilder,
 			string connectionString,
@@ -47,6 +57,17 @@ namespace MySQL.Data.Entity.Extensions
 			return optionsBuilder;
 		}
 
+		/// <summary>
+		///     Configures the context to connect to a MySQL database.
+		/// </summary>
+		/// <param name="optionsBuilder"> The builder being used to configure the context. </param>
+		/// <param name="connection">
+		///     An existing <see cref="DbConnection" /> to be used to connect to the database. If the connection is
+		///     in the open state then EF will not open or close the connection. If the connection is in the closed
+		///     state then EF will open and close the connection as needed.
+		/// </param>
+		/// <param name="mysqlOptionsAction">An optional action to allow additional MySQL specific configuration.</param>
+		/// <returns> The options builder so that further configuration can be chained. </returns>
 		public static DbContextOptionsBuilder UseMySQL(
 			this DbContextOptionsBuilder optionsBuilder,
 			DbConnection connection,
@@ -65,6 +86,41 @@ namespace MySQL.Data.Entity.Extensions
 			return optionsBuilder;
 		}
 
+		/// <summary>
+		///     Configures the context to connect to a MySQL database.
+		/// </summary>
+		/// <typeparam name="TContext"> The type of context to be configured. </typeparam>
+		/// <param name="optionsBuilder"> The builder being used to configure the context. </param>
+		/// <param name="connectionString"> The connection string of the database to connect to. </param>
+		/// <param name="mysqlOptionsAction">An optional action to allow additional MySQL specific configuration.</param>
+		/// <returns> The options builder so that further configuration can be chained. </returns>
+		public static DbContextOptionsBuilder<TContext> UseMySQL<TContext>(
+			this DbContextOptionsBuilder<TContext> optionsBuilder,
+			string connectionString,
+			Action<MySQLDbContextOptionsBuilder> mysqlOptionsAction = null)
+			where TContext : DbContext
+			=> (DbContextOptionsBuilder<TContext>)UseMySQL(
+				(DbContextOptionsBuilder)optionsBuilder, connectionString, mysqlOptionsAction);
+
+		/// <summary>
+		///     Configures the context to connect to a MySQL database.
+		/// </summary>
+		/// <typeparam name="TContext"> The type of context to be configured. </typeparam>
+		/// <param name="optionsBuilder"> The builder being used to configure the context. </param>
+		/// <param name="connection">
+		///     An existing <see cref="DbConnection" /> to be used to connect to the database. If the connection is
+		///     in the open state then EF will not open or close the connection. If the connection is in the closed
+		///     state then EF will open and close the connection as needed.
+		/// </param>
+		/// <param name="mysqlOptionsAction">An optional action to allow additional MySQL specific configuration.</param>
+		/// <returns> The options builder so that further configuration can be chained. </returns>
+		public static DbContextOptionsBuilder<TContext> UseMySQL<TContext>(
+			this DbContextOptionsBuilder<TContext> optionsBuilder,
+			DbConnection connection,
+			Action<MySQLDbContextOptionsBuilder> mysqlOptionsAction = null)
+			where TContext : DbContext
+			=> (DbContextOptionsBuilder<TContext>)UseMySQL(
+				(DbContextOptionsBuilder)optionsBuilder, connection, mysqlOptionsAction);
 
 
 		private static MySQLOptionsExtension GetOrCreateExtension(DbContextOptionsBuilder optionsBuilder)
