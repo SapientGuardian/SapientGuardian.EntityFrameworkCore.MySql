@@ -22,36 +22,47 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using System;
 using System.Data.Common;
 
 namespace MySQL.Data.Entity.Extensions
 {
 	public static class MySQLDbContextOptionsExtensions
 	{
-		public static MySQLDbContextOptionsBuilder UseMySQL(this DbContextOptionsBuilder optionsBuilder, string connectionString)
+		public static DbContextOptionsBuilder UseMySQL(
+			this DbContextOptionsBuilder optionsBuilder,
+			string connectionString,
+			Action<MySQLDbContextOptionsBuilder> mysqlOptionsAction = null)
 		{
-			var extension = optionsBuilder.Options.FindExtension<MySQLOptionsExtension>();
-			if(extension == null)
-				extension = new MySQLOptionsExtension();
+			var extension = GetOrCreateExtension(optionsBuilder);
 			extension.ConnectionString = connectionString;
 
 			IDbContextOptionsBuilderInfrastructure o = optionsBuilder as IDbContextOptionsBuilderInfrastructure;
 			o.AddOrUpdateExtension(extension);
 
-			return new MySQLDbContextOptionsBuilder(optionsBuilder);
+			ConfigureWarnings(optionsBuilder);
+
+			mysqlOptionsAction?.Invoke(new MySQLDbContextOptionsBuilder(optionsBuilder));
+
+			return optionsBuilder;
 		}
 
-		public static MySQLDbContextOptionsBuilder UseMySQL(this DbContextOptionsBuilder optionsBuilder, DbConnection connection)
+		public static DbContextOptionsBuilder UseMySQL(
+			this DbContextOptionsBuilder optionsBuilder,
+			DbConnection connection,
+			Action<MySQLDbContextOptionsBuilder> mysqlOptionsAction = null)
 		{
-			var extension = optionsBuilder.Options.FindExtension<MySQLOptionsExtension>();
-			if(extension == null)
-				extension = new MySQLOptionsExtension();
+			var extension = GetOrCreateExtension(optionsBuilder);
 			extension.Connection = connection;
 
 			IDbContextOptionsBuilderInfrastructure o = optionsBuilder as IDbContextOptionsBuilderInfrastructure;
 			o.AddOrUpdateExtension(extension);
 
-			return new MySQLDbContextOptionsBuilder(optionsBuilder);
+			ConfigureWarnings(optionsBuilder);
+
+			mysqlOptionsAction?.Invoke(new MySQLDbContextOptionsBuilder(optionsBuilder));
+
+			return optionsBuilder;
 		}
 
 
@@ -64,5 +75,14 @@ namespace MySQL.Data.Entity.Extensions
 				: new MySQLOptionsExtension();
 		}
 
+		private static void ConfigureWarnings(DbContextOptionsBuilder optionsBuilder)
+		{
+			// Set warnings defaults
+			optionsBuilder.ConfigureWarnings(w =>
+			{
+				w.Configuration.TryAddExplicit(
+					RelationalEventId.AmbientTransactionWarning, WarningBehavior.Throw);
+			});
+		}
 	}
 }
