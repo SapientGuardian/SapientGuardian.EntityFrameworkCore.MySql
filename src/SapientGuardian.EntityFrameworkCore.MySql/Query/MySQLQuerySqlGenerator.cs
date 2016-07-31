@@ -25,6 +25,7 @@ using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Sql;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace MySQL.Data.Entity.Query
 {
@@ -64,14 +65,21 @@ namespace MySQL.Data.Entity.Query
 
 		protected override void GenerateLimitOffset( SelectExpression selectExpression)
 		{
-
 			ThrowIf.Argument.IsNull(selectExpression, "selectExpression");
 
-			if(selectExpression.Limit != null)
+			if(selectExpression.Limit != null || selectExpression.Offset != null)
 			{
-				Sql.AppendLine().Append("LIMIT ").Append(selectExpression.Limit);
-			}
+				Sql.AppendLine().Append("LIMIT ");
 
+				Visit(selectExpression.Limit ?? Expression.Constant(-1));
+
+				if(selectExpression.Offset != null)
+				{
+					Sql.Append(" OFFSET ");
+
+					Visit(selectExpression.Offset);
+				}
+			}
 		}
 	}
 }
