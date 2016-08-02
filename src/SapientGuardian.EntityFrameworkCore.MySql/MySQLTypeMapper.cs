@@ -101,7 +101,8 @@ namespace MySQL.Data.Entity
 				{ typeof(short), _smallint },
 				{ typeof(float), _real },
 				{ typeof(decimal), _decimal },
-				{ typeof(byte[]), _varbinary }
+				{ typeof(byte[]), _varbinary },
+				{ typeof(string), _varchar }
 			};
 		}
 
