@@ -30,6 +30,8 @@ namespace MySQL.Data.Entity.Migrations
 {
 	class MySQLHistoryRepository : HistoryRepository
 	{
+        private MySQLRelationalConnection _connection;
+
 		public MySQLHistoryRepository(
 			IDatabaseCreator databaseCreator,
 			IRawSqlCommandBuilder sqlCommandBuilder,
@@ -53,7 +55,8 @@ namespace MySQL.Data.Entity.Migrations
 
 		protected override string ExistsSql
 			=> "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" +
-			   SqlGenerationHelper.EscapeLiteral(TableName) + "'";
+			   SqlGenerationHelper.EscapeLiteral(TableName) + "' AND TABLE_SCHEMA = '" + 
+               SqlGenerationHelper.EscapeLiteral(_connection.DbConnection.Database) + "'";
 
 		public override string GetBeginIfExistsScript(string migrationId)
 		{
