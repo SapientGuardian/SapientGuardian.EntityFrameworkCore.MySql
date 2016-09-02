@@ -51,6 +51,7 @@ namespace MySQL.Data.Entity.Migrations
 					  annotations,
 					  sql)
 		{
+            _connection = connection;
 		}
 
 		protected override string ExistsSql
