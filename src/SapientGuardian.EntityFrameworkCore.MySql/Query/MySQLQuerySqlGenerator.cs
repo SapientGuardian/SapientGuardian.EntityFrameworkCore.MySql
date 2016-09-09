@@ -21,6 +21,7 @@
 // 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 
+using System;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Sql;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -81,5 +82,19 @@ namespace MySQL.Data.Entity.Query
 				}
 			}
 		}
-	}
+
+        protected override TResult VisitUnhandledItem<TItem, TResult>(TItem unhandledItem, string visitMethod, Func<TItem, TResult> baseBehavior)
+        {
+            var methodCallExpression = unhandledItem as MethodCallExpression;
+            if (methodCallExpression == null)
+                return base.VisitUnhandledItem(unhandledItem, visitMethod, baseBehavior);
+
+            if (!methodCallExpression.Method.Name.Equals("Format", StringComparison.OrdinalIgnoreCase))
+                return base.VisitUnhandledItem(unhandledItem, visitMethod, baseBehavior);
+
+            var value = Expression.Lambda<Func<string>>(methodCallExpression).Compile().Invoke();
+            Sql.Append("'").Append(value).Append("'");
+            return (TResult)((object)Expression.Constant(value, typeof(string)));
+        }
+    }
 }
