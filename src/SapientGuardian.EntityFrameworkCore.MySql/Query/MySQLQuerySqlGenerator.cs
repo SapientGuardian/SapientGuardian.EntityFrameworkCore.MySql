@@ -91,8 +91,9 @@ namespace MySQL.Data.Entity.Query
 
             if (!methodCallExpression.Method.Name.Equals("Format", StringComparison.OrdinalIgnoreCase))
                 return base.VisitUnhandledItem(unhandledItem, visitMethod, baseBehavior);
-
-            var value = Expression.Lambda<Func<string>>(methodCallExpression).Compile().Invoke();
+            var @params = methodCallExpression.Arguments.OfType<ParameterExpression>().ToArray();
+            var @paramsValue = methodCallExpression.Arguments.OfType<ParameterExpression>().Select(pe => this.ParameterValues[pe.Name]).ToArray();
+            var value = Expression.Lambda(methodCallExpression, @params).Compile().DynamicInvoke(@paramsValue);
             Sql.Append("'").Append(value).Append("'");
             return (TResult)((object)Expression.Constant(value, typeof(string)));
         }
