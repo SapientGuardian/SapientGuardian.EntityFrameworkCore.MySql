@@ -32,22 +32,8 @@ namespace MySQL.Data.Entity.Query
 {
 	public class MySQLQuerySqlGenerator : DefaultQuerySqlGenerator
 	{
-		protected override string TypedFalseLiteral
-		{
-			get
-			{
-				return "('0')";
-			}
-		}
-
-
-		protected override string TypedTrueLiteral
-		{
-			get
-			{
-				return "('1')";
-			}
-		}
+		protected override string TypedFalseLiteral => "('0')";
+		protected override string TypedTrueLiteral => "('1')";
 
 		private MySQLTypeMapper _typeMapper;
 
@@ -93,7 +79,7 @@ namespace MySQL.Data.Entity.Query
 			if(typeMapping == null)
 				throw new InvalidOperationException(RelationalStrings.UnsupportedType(explicitCastExpression.Type.Name));
 
-			Sql.Append(" CAST(");
+			Sql.Append("CAST(");
 			Visit(explicitCastExpression.Operand);
 			Sql.Append(" AS ");
 			Sql.Append(typeMapping.StoreType);
@@ -111,5 +97,21 @@ namespace MySQL.Data.Entity.Query
 
 	        return likeExpression;
 	    }
-    }
+
+		protected override Expression VisitBinary(BinaryExpression expression)
+		{
+			if(expression.NodeType == ExpressionType.Add && expression.Type == typeof(string))
+			{
+				Sql.Append("CONCAT(");
+				Visit(expression.Left);
+				Sql.Append(", ");
+				Visit(expression.Right);
+				Sql.Append(")");
+
+				return expression;
+			}
+
+			return base.VisitBinary(expression);
+		}
+	}
 }
