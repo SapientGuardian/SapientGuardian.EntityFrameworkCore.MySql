@@ -21,34 +21,21 @@
 // 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 
-using System;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Sql;
 using Microsoft.EntityFrameworkCore.Storage;
-using System.Linq;
+using System;
 using System.Linq.Expressions;
 
 namespace MySQL.Data.Entity.Query
 {
 	public class MySQLQuerySqlGenerator : DefaultQuerySqlGenerator
 	{
-		protected override string TypedFalseLiteral
-		{
-			get
-			{
-				return "('0')";
-			}
-		}
+		protected override string TypedFalseLiteral => "('0')";
+		protected override string TypedTrueLiteral => "('1')";
 
-
-		protected override string TypedTrueLiteral
-		{
-			get
-			{
-				return "('1')";
-			}
-		}
+		private MySQLTypeMapper _typeMapper;
 
 		public MySQLQuerySqlGenerator(
 			   IRelationalCommandBuilderFactory relationalCommandBuilderFactory,
@@ -57,7 +44,9 @@ namespace MySQL.Data.Entity.Query
 			   IRelationalTypeMapper relationalTypeMapper,
 			   SelectExpression selectExpression)
 				: base(relationalCommandBuilderFactory, sqlGenerator, parameterNameGeneratorFactory, relationalTypeMapper, selectExpression)
-		{ }
+		{
+			_typeMapper = relationalTypeMapper as MySQLTypeMapper;
+		}
 
 
 		protected override void GenerateTop(SelectExpression selectExpression)
@@ -84,13 +73,45 @@ namespace MySQL.Data.Entity.Query
 			}
 		}
 
-	    public override Expression VisitLike(LikeExpression likeExpression)
+		public override Expression VisitExplicitCast(ExplicitCastExpression explicitCastExpression)
+		{
+			var typeMapping = _typeMapper.FindMappingForExplicitCast(explicitCastExpression.Type);
+			if(typeMapping == null)
+				throw new InvalidOperationException(RelationalStrings.UnsupportedType(explicitCastExpression.Type.Name));
+
+			Sql.Append("CAST(");
+			Visit(explicitCastExpression.Operand);
+			Sql.Append(" AS ");
+			Sql.Append(typeMapping.StoreType);
+			Sql.Append(")");
+
+			return explicitCastExpression;
+		}
+
+		public override Expression VisitLike(LikeExpression likeExpression)
 	    {
-            this.Visit(likeExpression.Match);
-            this.Sql.Append(" LIKE ('%' ");
-            this.Visit(likeExpression.Pattern);
-            this.Sql.Append(" '%')");
+            Visit(likeExpression.Match);
+            Sql.Append(" LIKE ('%' ");
+            Visit(likeExpression.Pattern);
+            Sql.Append(" '%')");
+
 	        return likeExpression;
 	    }
-    }
+
+		protected override Expression VisitBinary(BinaryExpression expression)
+		{
+			if(expression.NodeType == ExpressionType.Add && expression.Type == typeof(string))
+			{
+				Sql.Append("CONCAT(");
+				Visit(expression.Left);
+				Sql.Append(", ");
+				Visit(expression.Right);
+				Sql.Append(")");
+
+				return expression;
+			}
+
+			return base.VisitBinary(expression);
+		}
+	}
 }

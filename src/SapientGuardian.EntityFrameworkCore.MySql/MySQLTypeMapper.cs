@@ -20,12 +20,12 @@
 // with this program; if not, write to the Free Software Foundation, Inc., 
 // 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore;
 
 namespace MySQL.Data.Entity
 {
@@ -47,18 +47,24 @@ namespace MySQL.Data.Entity
 		private readonly RelationalTypeMapping _Text = new RelationalTypeMapping("text", typeof(String));
 		private readonly RelationalTypeMapping _tinyText = new RelationalTypeMapping("tinytext", typeof(String));
 
-		private readonly RelationalTypeMapping _varchar = new RelationalTypeMapping("varchar(1000)", typeof(String), DbType.AnsiString, false, 1000);
-		private readonly RelationalTypeMapping _varbinary = new RelationalTypeMapping("blob", typeof(byte[]));
-		private readonly RelationalTypeMapping _datetime = new RelationalTypeMapping("datetime", typeof(DateTime));
-		private readonly RelationalTypeMapping _date = new RelationalTypeMapping("date", typeof(DateTime));
-		private readonly RelationalTypeMapping _time = new RelationalTypeMapping("time", typeof(DateTime));
+		private readonly RelationalTypeMapping _varchar = new RelationalTypeMapping("varchar(255)", typeof(String), DbType.AnsiString, false, 255);
+		private readonly RelationalTypeMapping _varbinary = new RelationalTypeMapping("blob", typeof(byte[]), DbType.Binary);
+		private readonly RelationalTypeMapping _datetime = new RelationalTypeMapping("datetime", typeof(DateTime), DbType.DateTime);
+		private readonly RelationalTypeMapping _date = new RelationalTypeMapping("date", typeof(DateTime), DbType.Date);
+		private readonly RelationalTypeMapping _time = new RelationalTypeMapping("time", typeof(TimeSpan), DbType.Time);
 		private readonly RelationalTypeMapping _double = new RelationalTypeMapping("float", typeof(Single));
 		private readonly RelationalTypeMapping _real = new RelationalTypeMapping("real", typeof(Single));
 		private readonly RelationalTypeMapping _decimal = new RelationalTypeMapping("decimal(18, 2)", typeof(Decimal));
 
+		private readonly RelationalTypeMapping _cast_binary = new RelationalTypeMapping("BINARY(255)", typeof(byte[]), DbType.Binary);
+		private readonly RelationalTypeMapping _cast_char = new RelationalTypeMapping("CHAR(255)", typeof(string), DbType.AnsiString, false, 255);
+		private readonly RelationalTypeMapping _cast_datetime = new RelationalTypeMapping("DATETIME", typeof(DateTime), DbType.DateTime);
+		private readonly RelationalTypeMapping _cast_signed = new RelationalTypeMapping("SIGNED", typeof(long));
+		private readonly RelationalTypeMapping _cast_unsigned = new RelationalTypeMapping("UNSIGNED", typeof(ulong));
 
 		private readonly Dictionary<string, RelationalTypeMapping> _storeTypeMappings;
 		private readonly Dictionary<Type, RelationalTypeMapping> _clrTypeMappings;
+		private readonly Dictionary<Type, RelationalTypeMapping> _clrCastTypeMappings;
 
 		public MySQLTypeMapper()
 		{
@@ -90,6 +96,7 @@ namespace MySQL.Data.Entity
 				{ typeof(int), _int },
 				{ typeof(long), _bigint },
 				{ typeof(DateTime), _datetime },
+				{ typeof(TimeSpan), _time },
 				{ typeof(bool), _bit },
 				{ typeof(byte), _tinyint },
 				{ typeof(double), _double },
@@ -103,6 +110,21 @@ namespace MySQL.Data.Entity
 				{ typeof(decimal), _decimal },
 				{ typeof(byte[]), _varbinary },
 				{ typeof(string), _varchar }
+			};
+
+			_clrCastTypeMappings = new Dictionary<Type, RelationalTypeMapping>
+			{
+				{ typeof(byte[]), _cast_binary },
+				{ typeof(string), _cast_char },
+				{ typeof(DateTime), _cast_datetime },
+				{ typeof(char), _cast_signed },
+				{ typeof(short), _cast_signed },
+				{ typeof(int), _cast_signed },
+				{ typeof(long), _cast_signed },
+				{ typeof(byte), _cast_unsigned },
+				{ typeof(ushort), _cast_unsigned },
+				{ typeof(uint), _cast_unsigned },
+				{ typeof(ulong), _cast_unsigned }
 			};
 		}
 
@@ -136,6 +158,14 @@ namespace MySQL.Data.Entity
 				return _varbinary;
 
 			return base.FindCustomMapping(property);
+		}
+
+		public RelationalTypeMapping FindMappingForExplicitCast(Type clrType)
+		{
+			RelationalTypeMapping mapping;
+			return _clrCastTypeMappings.TryGetValue(clrType, out mapping)
+				? mapping
+				: null;
 		}
 	}
 }
