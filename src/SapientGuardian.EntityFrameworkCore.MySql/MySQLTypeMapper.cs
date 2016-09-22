@@ -50,6 +50,7 @@ namespace MySQL.Data.Entity
 		private readonly RelationalTypeMapping _varchar = new RelationalTypeMapping("varchar(255)", typeof(String), DbType.AnsiString, false, 255);
 		private readonly RelationalTypeMapping _varbinary = new RelationalTypeMapping("blob", typeof(byte[]), DbType.Binary);
 		private readonly RelationalTypeMapping _datetime = new RelationalTypeMapping("datetime", typeof(DateTime), DbType.DateTime);
+		private readonly RelationalTypeMapping _datetimeOffset = new RelationalTypeMapping("varchar(255)", typeof(DateTimeOffset), DbType.DateTimeOffset);
 		private readonly RelationalTypeMapping _date = new RelationalTypeMapping("date", typeof(DateTime), DbType.Date);
 		private readonly RelationalTypeMapping _time = new RelationalTypeMapping("time", typeof(TimeSpan), DbType.Time);
 		private readonly RelationalTypeMapping _double = new RelationalTypeMapping("float", typeof(Single));
@@ -59,6 +60,7 @@ namespace MySQL.Data.Entity
 		private readonly RelationalTypeMapping _cast_binary = new RelationalTypeMapping("BINARY(255)", typeof(byte[]), DbType.Binary);
 		private readonly RelationalTypeMapping _cast_char = new RelationalTypeMapping("CHAR(255)", typeof(string), DbType.AnsiString, false, 255);
 		private readonly RelationalTypeMapping _cast_datetime = new RelationalTypeMapping("DATETIME", typeof(DateTime), DbType.DateTime);
+		private readonly RelationalTypeMapping _cast_decimal = new RelationalTypeMapping("DECIMAL", typeof(Decimal), DbType.Decimal);
 		private readonly RelationalTypeMapping _cast_signed = new RelationalTypeMapping("SIGNED", typeof(long));
 		private readonly RelationalTypeMapping _cast_unsigned = new RelationalTypeMapping("UNSIGNED", typeof(ulong));
 
@@ -96,6 +98,7 @@ namespace MySQL.Data.Entity
 				{ typeof(int), _int },
 				{ typeof(long), _bigint },
 				{ typeof(DateTime), _datetime },
+				{ typeof(DateTimeOffset), _datetimeOffset },
 				{ typeof(TimeSpan), _time },
 				{ typeof(bool), _bit },
 				{ typeof(byte), _tinyint },
@@ -117,6 +120,9 @@ namespace MySQL.Data.Entity
 				{ typeof(byte[]), _cast_binary },
 				{ typeof(string), _cast_char },
 				{ typeof(DateTime), _cast_datetime },
+				{ typeof(decimal), _cast_decimal },
+				{ typeof(float), _cast_decimal },
+				{ typeof(double), _cast_decimal },
 				{ typeof(char), _cast_signed },
 				{ typeof(short), _cast_signed },
 				{ typeof(int), _cast_signed },
