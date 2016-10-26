@@ -64,7 +64,7 @@ namespace MySQL.Data.Entity
 		private readonly RelationalTypeMapping _cast_signed = new RelationalTypeMapping("SIGNED", typeof(long));
 		private readonly RelationalTypeMapping _cast_unsigned = new RelationalTypeMapping("UNSIGNED", typeof(ulong));
 
-        private readonly RelationalTypeMapping _guid = new RelationalTypeMapping("varchar(40)", typeof(Guid), DbType.String, true, null);
+        private readonly RelationalTypeMapping _guid = new RelationalTypeMapping("CHAR(36)", typeof(Guid), DbType.String, true, null);
 
         private readonly Dictionary<string, RelationalTypeMapping> _storeTypeMappings;
 		private readonly Dictionary<Type, RelationalTypeMapping> _clrTypeMappings;
