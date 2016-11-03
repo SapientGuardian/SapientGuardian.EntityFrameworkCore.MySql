@@ -21,7 +21,7 @@
 // 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
 using MySql.Data.EntityFramework7.Metadata;
 using MySQL.Data.Entity.Metadata;
 
