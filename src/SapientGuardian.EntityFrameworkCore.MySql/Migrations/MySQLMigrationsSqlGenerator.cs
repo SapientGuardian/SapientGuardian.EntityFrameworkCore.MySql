@@ -167,9 +167,8 @@ namespace MySQL.Data.Entity.Migrations
 			if(defaultValueSql != null)
 			{
 				builder
-					.Append(" DEFAULT (")
-					.Append(defaultValueSql)
-					.Append(")");
+					.Append(" DEFAULT ")
+					.Append(defaultValueSql);
 			}
 			else if(defaultValue != null)
 			{
