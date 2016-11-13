@@ -53,8 +53,10 @@ namespace MySQL.Data.Entity
 		private readonly RelationalTypeMapping _datetimeOffset = new RelationalTypeMapping("varchar(255)", typeof(DateTimeOffset), DbType.DateTimeOffset);
 		private readonly RelationalTypeMapping _date = new RelationalTypeMapping("date", typeof(DateTime), DbType.Date);
 		private readonly RelationalTypeMapping _time = new RelationalTypeMapping("time", typeof(TimeSpan), DbType.Time);
-		private readonly RelationalTypeMapping _double = new RelationalTypeMapping("float", typeof(Single));
-		private readonly RelationalTypeMapping _real = new RelationalTypeMapping("real", typeof(Single));
+		private readonly RelationalTypeMapping _double = new RelationalTypeMapping("double", typeof(double));
+        private readonly RelationalTypeMapping _float = new RelationalTypeMapping("float", typeof(float));
+        private readonly RelationalTypeMapping _single = new RelationalTypeMapping("float", typeof(Single));
+        private readonly RelationalTypeMapping _real = new RelationalTypeMapping("real", typeof(Single));
 		private readonly RelationalTypeMapping _decimal = new RelationalTypeMapping("decimal(18, 2)", typeof(Decimal));
 
 		private readonly RelationalTypeMapping _cast_binary = new RelationalTypeMapping("BINARY(255)", typeof(byte[]), DbType.Binary);
@@ -77,8 +79,8 @@ namespace MySQL.Data.Entity
 				{ "bigint", _bigint},
 				{ "decimal", _decimal },
 				{ "double", _double },
-				{ "float", _double },
-				{"int", _int},
+				{ "float", _float },                
+                { "int", _int},
 				{ "mediumint", _int },
 				{ "real", _real },
 				{ "smallint", _smallint },
@@ -111,8 +113,8 @@ namespace MySQL.Data.Entity
 				{ typeof(uint), new RelationalTypeMapping("bigint", _bigint.GetType()) },
 				{ typeof(ulong), new RelationalTypeMapping("numeric(20, 0)" ,_decimal.GetType()) },
 				{ typeof(short), _smallint },
-				{ typeof(float), _real },
-				{ typeof(decimal), _decimal },
+				{ typeof(float), _single },                
+                { typeof(decimal), _decimal },
 				{ typeof(byte[]), _varbinary },
 				{ typeof(string), _varchar },
                 { typeof(Guid), _guid }
