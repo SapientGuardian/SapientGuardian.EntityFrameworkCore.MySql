@@ -58,21 +58,105 @@ namespace MySQL.Data.Entity.Migrations
 		}
 
 		protected override void Generate(
-		  EnsureSchemaOperation operation,
-		 IModel model,
-		  MigrationCommandListBuilder builder)
+			EnsureSchemaOperation operation,
+			IModel model,
+			MigrationCommandListBuilder builder)
 		{
 			ThrowIf.Argument.IsNull(operation, "operation");
 			ThrowIf.Argument.IsNull(builder, "builder");
 
 			throw new NotImplementedException();
-			//base.Generate(operation, model, builder);
+		}
+
+		protected override void Generate(
+			AlterColumnOperation operation,
+			IModel model,
+			MigrationCommandListBuilder builder)
+		{
+			ThrowIf.Argument.IsNull(operation, "operation");
+			ThrowIf.Argument.IsNull(builder, "builder");
+
+			var columnType = operation.ColumnType;
+			if(columnType == null)
+			{
+				var property = FindProperty(model, operation.Schema, operation.Table, operation.Name);
+				columnType = property != null
+					? TypeMapper.GetMapping(property).StoreType
+					: TypeMapper.GetMapping(operation.ClrType).StoreType;
+			}
+
+			builder
+				.Append("ALTER TABLE ")
+				.Append(SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+				.Append(" MODIFY ")
+				.Append(SqlGenerationHelper.DelimitIdentifier(operation.Name))
+				.Append(" ")
+				.Append(columnType)
+				.Append(operation.IsNullable ? " NULL" : " NOT NULL");
+
+			if(operation.DefaultValue != null)
+			{
+				builder
+					.Append(" DEFAULT ")
+					.Append(SqlGenerationHelper.GenerateLiteral(operation.DefaultValue));
+			}
+			else if(!string.IsNullOrWhiteSpace(operation.ComputedColumnSql))
+			{
+				builder
+					.Append(" DEFAULT ")
+					.Append(operation.DefaultValueSql);
+			}
+
+			builder.AppendLine(SqlGenerationHelper.StatementTerminator);
+		}
+
+		protected override void Generate(
+			DropIndexOperation operation,
+			IModel model,
+			MigrationCommandListBuilder builder)
+		{
+			ThrowIf.Argument.IsNull(operation, "operation");
+			ThrowIf.Argument.IsNull(builder, "builder");
+
+			builder
+				.Append("DROP INDEX ")
+				.Append(SqlGenerationHelper.DelimitIdentifier(operation.Name))
+				.Append(" ON ")
+				.Append(SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+				.AppendLine(SqlGenerationHelper.StatementTerminator);
+		}
+
+		protected override void Generate(
+			DropPrimaryKeyOperation operation,
+			IModel model,
+			MigrationCommandListBuilder builder)
+		{
+			ThrowIf.Argument.IsNull(operation, "operation");
+			ThrowIf.Argument.IsNull(builder, "builder");
+
+			throw new NotImplementedException();
+		}
+
+		protected override void Generate(
+			DropForeignKeyOperation operation,
+			IModel model,
+			MigrationCommandListBuilder builder)
+		{
+			ThrowIf.Argument.IsNull(operation, "operation");
+			ThrowIf.Argument.IsNull(builder, "builder");
+
+			builder
+				.Append("ALTER TABLE ")
+				.Append(SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+				.Append(" DROP FOREIGN KEY ")
+				.Append(SqlGenerationHelper.DelimitIdentifier(operation.Name))
+				.AppendLine(SqlGenerationHelper.StatementTerminator);
 		}
 
 		protected virtual void Generate(
-			 MySQLCreateDatabaseOperation operation,
+			MySQLCreateDatabaseOperation operation,
 			IModel model,
-			 MigrationCommandListBuilder builder)
+			MigrationCommandListBuilder builder)
 		{
 			ThrowIf.Argument.IsNull(operation, "operation");
 			ThrowIf.Argument.IsNull(builder, "builder");
@@ -83,9 +167,9 @@ namespace MySQL.Data.Entity.Migrations
 		}
 
 		protected virtual void Generate(
-			 MySQLDropDatabaseOperation operation,
-			 IModel model,
-			 MigrationCommandListBuilder builder)
+			MySQLDropDatabaseOperation operation,
+			IModel model,
+			MigrationCommandListBuilder builder)
 		{
 			ThrowIf.Argument.IsNull(operation, "operation");
 			ThrowIf.Argument.IsNull(builder, "builder");
@@ -158,9 +242,9 @@ namespace MySQL.Data.Entity.Migrations
 
 
 		protected override void DefaultValue(
-				object defaultValue,
-				string defaultValueSql,
-				MigrationCommandListBuilder builder)
+			object defaultValue,
+			string defaultValueSql,
+			MigrationCommandListBuilder builder)
 		{
 			ThrowIf.Argument.IsNull(builder, nameof(builder));
 
@@ -181,9 +265,9 @@ namespace MySQL.Data.Entity.Migrations
 
 
 		protected override void PrimaryKeyConstraint(
-			  AddPrimaryKeyOperation operation,
-			  IModel model,
-			  MigrationCommandListBuilder builder)
+			AddPrimaryKeyOperation operation,
+			IModel model,
+			MigrationCommandListBuilder builder)
 		{
 
 			ThrowIf.Argument.IsNull(operation, "AddPrimaryKeyOperation");
@@ -202,7 +286,5 @@ namespace MySQL.Data.Entity.Migrations
 
 			IndexTraits(operation, model, builder);
 		}
-
-
 	}
 }
