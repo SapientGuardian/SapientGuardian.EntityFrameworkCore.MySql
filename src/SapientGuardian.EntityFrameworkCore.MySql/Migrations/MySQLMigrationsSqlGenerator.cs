@@ -66,7 +66,6 @@ namespace MySQL.Data.Entity.Migrations
 			ThrowIf.Argument.IsNull(builder, "builder");
 
 			throw new NotImplementedException();
-			//base.Generate(operation, model, builder);
 		}
 
 		protected override void Generate(
@@ -109,6 +108,49 @@ namespace MySQL.Data.Entity.Migrations
 			}
 
 			builder.AppendLine(SqlGenerationHelper.StatementTerminator);
+		}
+
+		protected override void Generate(
+			DropIndexOperation operation,
+			IModel model,
+			MigrationCommandListBuilder builder)
+		{
+			ThrowIf.Argument.IsNull(operation, "operation");
+			ThrowIf.Argument.IsNull(builder, "builder");
+
+			builder
+				.Append("DROP INDEX ")
+				.Append(SqlGenerationHelper.DelimitIdentifier(operation.Name))
+				.Append(" ON ")
+				.Append(SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+				.AppendLine(SqlGenerationHelper.StatementTerminator);
+		}
+
+		protected override void Generate(
+			DropPrimaryKeyOperation operation,
+			IModel model,
+			MigrationCommandListBuilder builder)
+		{
+			ThrowIf.Argument.IsNull(operation, "operation");
+			ThrowIf.Argument.IsNull(builder, "builder");
+
+			throw new NotImplementedException();
+		}
+
+		protected override void Generate(
+			DropForeignKeyOperation operation,
+			IModel model,
+			MigrationCommandListBuilder builder)
+		{
+			ThrowIf.Argument.IsNull(operation, "operation");
+			ThrowIf.Argument.IsNull(builder, "builder");
+
+			builder
+				.Append("ALTER TABLE ")
+				.Append(SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+				.Append(" DROP FOREIGN KEY ")
+				.Append(SqlGenerationHelper.DelimitIdentifier(operation.Name))
+				.AppendLine(SqlGenerationHelper.StatementTerminator);
 		}
 
 		protected virtual void Generate(
