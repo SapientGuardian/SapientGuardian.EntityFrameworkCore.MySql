@@ -36,11 +36,11 @@ namespace MySQL.Data.Entity
         {
             this._methodCallTranslators = new List<IMethodCallTranslator>()
             {
-                new MySqlContainsTranslator(),
-                new EndsWithTranslator(),
+                new MySqlContainsTranslator(logger),
+                new EndsWithTranslator(logger),
                 new EqualsTranslator(logger),
                 new IsNullOrEmptyTranslator(),
-                new StartsWithTranslator()
+                new StartsWithTranslator(logger)
             };
         }
 

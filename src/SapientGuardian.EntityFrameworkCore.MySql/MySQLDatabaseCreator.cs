@@ -46,8 +46,9 @@ namespace MySQL.Data.Entity
 			IMigrationsSqlGenerator generator,
 			IMigrationCommandExecutor executor,
 			IModel model,
-			IRawSqlCommandBuilder commandBuilder)
-			: base(model, cxn, differ, generator, executor)
+			IRawSqlCommandBuilder commandBuilder,
+            IExecutionStrategyFactory executionStrategyFactory)
+			: base(model, cxn, differ, generator, executor, executionStrategyFactory)
 		{
 			ThrowIf.Argument.IsNull(cxn, "connection");
 			ThrowIf.Argument.IsNull(differ, "modelDiffer");

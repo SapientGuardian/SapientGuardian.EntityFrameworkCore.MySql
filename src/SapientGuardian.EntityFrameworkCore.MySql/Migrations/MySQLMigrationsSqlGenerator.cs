@@ -119,21 +119,24 @@ namespace MySQL.Data.Entity.Migrations
 			ThrowIf.Argument.IsNull(operation, "operation");
 			ThrowIf.Argument.IsNull(builder, "builder");
 
-			var property = FindProperty(model, operation.Schema, operation.Table, operation.Name);
-			var columnType = TypeMapper.GetMapping(property).StoreType;
+			var property = FindProperty(model, operation.Schema, operation.Table, operation.NewName);
+            if (property != null)
+            {
+                var columnType = TypeMapper.GetMapping(property).StoreType;
 
-			builder
-				.Append("ALTER TABLE ")
-				.Append(SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-				.Append(" CHANGE ")
-				.Append(SqlGenerationHelper.DelimitIdentifier(operation.Name))
-				.Append(" ")
-				.Append(SqlGenerationHelper.DelimitIdentifier(operation.NewName))
-				.Append(" ")
-				.Append(columnType)
-				.Append(property.IsNullable ? " NULL" : " NOT NULL");
+                builder
+                    .Append("ALTER TABLE ")
+                    .Append(SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+                    .Append(" CHANGE ")
+                    .Append(SqlGenerationHelper.DelimitIdentifier(operation.Name))
+                    .Append(" ")
+                    .Append(SqlGenerationHelper.DelimitIdentifier(operation.NewName))
+                    .Append(" ")
+                    .Append(columnType)
+                    .Append(property.IsNullable ? " NULL" : " NOT NULL");
 
-			builder.AppendLine(SqlGenerationHelper.StatementTerminator);
+                builder.AppendLine(SqlGenerationHelper.StatementTerminator);
+            }
 		}
 
 		protected override void Generate(
