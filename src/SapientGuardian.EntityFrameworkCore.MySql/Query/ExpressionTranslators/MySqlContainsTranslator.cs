@@ -11,7 +11,7 @@ namespace SapientGuardian.MySql.Data.EntityFrameworkCore.Query.ExpressionTransla
     {
         private static readonly MethodInfo MethodInfo = typeof(string).GetRuntimeMethod("Contains", new[] { typeof(string) });
 
-        public MySqlContainsTranslator(ILogger logger) : base(logger) { }
+        public MySqlContainsTranslator() : base() { }
 
         public override Expression Translate(MethodCallExpression methodCallExpression)
         {
