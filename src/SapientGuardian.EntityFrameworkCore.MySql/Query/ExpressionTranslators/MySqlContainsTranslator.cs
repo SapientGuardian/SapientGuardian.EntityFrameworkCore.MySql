@@ -3,15 +3,12 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
-using Microsoft.Extensions.Logging;
 
 namespace SapientGuardian.MySql.Data.EntityFrameworkCore.Query.ExpressionTranslators
 {
     public class MySqlContainsTranslator : ContainsTranslator
     {
         private static readonly MethodInfo MethodInfo = typeof(string).GetRuntimeMethod("Contains", new[] { typeof(string) });
-
-        public MySqlContainsTranslator() : base() { }
 
         public override Expression Translate(MethodCallExpression methodCallExpression)
         {
