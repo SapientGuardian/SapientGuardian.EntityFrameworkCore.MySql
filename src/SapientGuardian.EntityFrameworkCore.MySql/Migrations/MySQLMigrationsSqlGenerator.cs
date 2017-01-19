@@ -285,11 +285,21 @@ namespace MySQL.Data.Entity.Migrations
 			}
 			else if(defaultValue != null)
 			{
-				builder
-					.Append(" DEFAULT ")
-					.Append(defaultValue);
-			}
-		}
+                if (defaultValue is DateTime)
+                {
+                    var dt = (DateTime)defaultValue;
+                    builder
+                       .Append(" DEFAULT ")
+                       .Append(SqlGenerationHelper.GenerateLiteral(dt.ToString("yyyy-MM-dd HH:mm:ss")));                    
+                }
+                else
+                {
+                    builder
+                        .Append(" DEFAULT ")
+                        .Append(SqlGenerationHelper.GenerateLiteral(defaultValue.ToString()));
+                }
+            }
+        }
 
 
 
