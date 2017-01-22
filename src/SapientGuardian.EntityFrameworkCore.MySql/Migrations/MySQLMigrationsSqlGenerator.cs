@@ -28,6 +28,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using JetBrains.Annotations;
 
 namespace MySQL.Data.Entity.Migrations
 {
@@ -182,7 +183,22 @@ namespace MySQL.Data.Entity.Migrations
 				.AppendLine(SqlGenerationHelper.StatementTerminator);
 		}
 
-		protected virtual void Generate(
+        protected override void Generate(DropUniqueConstraintOperation operation, 
+            IModel model, 
+            MigrationCommandListBuilder builder)
+        {
+            ThrowIf.Argument.IsNull(operation, "operation");
+            ThrowIf.Argument.IsNull(builder, "builder");
+
+            builder
+                .Append("ALTER TABLE ")
+                .Append(SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+                .Append(" DROP INDEX ")
+                .Append(SqlGenerationHelper.DelimitIdentifier(operation.Name))
+                .AppendLine(SqlGenerationHelper.StatementTerminator);
+        }
+
+        protected virtual void Generate(
 			MySQLCreateDatabaseOperation operation,
 			IModel model,
 			MigrationCommandListBuilder builder)
