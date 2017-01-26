@@ -23,15 +23,39 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Update;
 using System.Text;
+using System.Collections.Generic;
 
 namespace MySQL.Data.Entity
 {
 	public class MySQLUpdateSqlGenerator : UpdateSqlGenerator
 	{
-
-		public MySQLUpdateSqlGenerator( ISqlGenerationHelper sqlGenerator)
+		public MySQLUpdateSqlGenerator(ISqlGenerationHelper sqlGenerator)
 				: base(sqlGenerator)
 		{ }
+
+		protected override void AppendValues(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations) 
+		{ 
+			ThrowIf.Argument.IsNull(commandStringBuilder, "commandStringBuilder"); 
+			ThrowIf.Argument.IsNull(operations, "operations"); 
+ 
+			if (operations.Count > 0) 
+			{ 
+				base.AppendValues(commandStringBuilder, operations); 
+			} 
+			else 
+			{ 
+				commandStringBuilder.Append("()"); 
+			} 
+		} 
+ 
+		protected override void AppendValuesHeader(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations) 
+		{ 
+			ThrowIf.Argument.IsNull(commandStringBuilder, "commandStringBuilder"); 
+ 			ThrowIf.Argument.IsNull(operations, "operations"); 
+ 
+			commandStringBuilder.AppendLine(); 
+			commandStringBuilder.Append("VALUES "); 
+		} 
 
 		protected override void AppendIdentityWhereCondition(StringBuilder commandStringBuilder, ColumnModification columnModification)
 		{
