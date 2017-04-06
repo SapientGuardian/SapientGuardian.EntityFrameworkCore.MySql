@@ -1,5 +1,5 @@
 {
-  "version": "7.1.21",
+  "version": "7.1.22",
   "description": "MySQL database provider for Entity Framework Core.",
   "authors": [ "how02", "SapientGuardian" ],
   "buildOptions": {
@@ -13,7 +13,7 @@
   "dependencies": {
     "Microsoft.EntityFrameworkCore": "1.0.0",
     "Microsoft.EntityFrameworkCore.Relational": "1.0.0",
-    "SapientGuardian.MySql.Data": "6.9.815",
+    "SapientGuardian.MySql.Data": "6.9.816",
     "NETStandard.Library": "1.6.0",
     "System.Linq": "4.1.0"
   },
