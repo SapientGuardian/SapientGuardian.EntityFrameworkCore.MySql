@@ -1,10 +1,14 @@
 version: 7.1.0-{build}
-image: Visual Studio 2015
+image: Visual Studio 2017
+install:
+- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/v4.0.0/nuget.exe
 build_script:
 - cmd: >-
-    dotnet restore -v Warning	
+    dotnet restore
 
     dotnet pack .\src\SapientGuardian.EntityFrameworkCore.MySql -o .\artifacts\SapientGuardian.EntityFrameworkCore.MySql -c Release
+
+    move .\src\SapientGuardian.EntityFrameworkCore.MySql\artifacts .\
 artifacts:
 - path: 'artifacts\**\*.nupkg'
 deploy:
