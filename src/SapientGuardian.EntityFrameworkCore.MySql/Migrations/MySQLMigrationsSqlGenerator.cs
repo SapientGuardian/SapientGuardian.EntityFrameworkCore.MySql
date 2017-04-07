@@ -308,6 +308,12 @@ namespace MySQL.Data.Entity.Migrations
                        .Append(" DEFAULT ")
                        .Append(SqlGenerationHelper.GenerateLiteral(dt.ToString("yyyy-MM-dd HH:mm:ss")));                    
                 }
+                else if (defaultValue is bool)
+                {
+                    builder
+                        .Append(" DEFAULT ")
+                        .Append(SqlGenerationHelper.GenerateLiteral((bool)defaultValue? 1 : 0));
+                }
                 else
                 {
                     builder
